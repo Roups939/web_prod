@@ -31,4 +31,5 @@ urlpatterns = [
     path('add-account/', views.add_account, name='add_account'),
     path('register/', RegisterView.as_view(), name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('update-rates/', views.update_rates, name='update_rates'),
 ]

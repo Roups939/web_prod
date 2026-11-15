@@ -176,26 +176,46 @@
         }
 
         button.btn-next {
-        background-color: transparent;
-        color: var(--accent-green);
-        border: 2px solid var(--accent-green);
-        padding: 12px 24px;
-        font-size: 16px;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 100%; /* Чтобы кнопка была на всю ширину формы */
-        display: block;
-    }
+            background-color: transparent;
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%; /* Чтобы кнопка была на всю ширину формы */
+            display: block;
+        }
 
-    button.btn-next:hover {
-        background-color: var(--accent-green);
-        color: #000; /* Черный текст при наведении */
-        box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
-    }
+        button.btn-next:hover {
+            background-color: var(--accent-green);
+            color: #000; /* Черный текст при наведении */
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        }
+        a.btn-next {
+            display: inline-block;
+            background-color: transparent;
+            color: var(--accent-green) !important;
+            border: 2px solid var(--accent-green);
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none !important;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        a.btn-next:hover {
+            background-color: var(--accent-green);
+            color: #000 !important;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        }
     </style>
 </head>
 <body>

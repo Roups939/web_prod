@@ -3,22 +3,32 @@
 {% block title %}Currency Tracker | Главная{% endblock %}
 
 {% block content %}
-<div style="text-align: center; padding: 50px 0;">
-    <h1 style="font-size: 48px; justify-content: center; margin-bottom: 20px;">
-        Управляй своими <span class="text-green">валютными</span> сбережениями
+<div style="text-align: center; padding: 40px 0;">
+    <h1 style="font-size: 42px; margin-bottom: 20px; display: block;">
+        Управляй своими <span style="color: var(--accent-green);">валютными</span> сбережениями
     </h1>
-    <p style="font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 40px;">
+    <p style="font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px;">
         Автоматический учет, актуальные курсы ЦБ и аналитика доходности вашего портфеля в одном месте.
     </p>
     
-    <div style="display: flex; gap: 20px; justify-content: center;">
-        <a href="{% url 'register' %}" class="btn-next" style="margin-top: 0; font-size: 18px; padding: 15px 30px;">Начать бесплатно</a>
-        <a href="{% url 'login' %}" class="btn-next" style="margin-top: 0; font-size: 18px; padding: 15px 30px; border-color: var(--text-muted); color: var(--text-main);">Войти</a>
+    <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+        <a href="{% url 'register' %}" class="btn-next" style="font-size: 16px; padding: 12px 30px;">Начать бесплатно</a>
+        <a href="{% url 'login' %}" class="btn-next" style="font-size: 16px; padding: 12px 30px; border-color: var(--text-muted); color: var(--text-main);">Войти</a>
     </div>
 </div>
 
-<div style="margin-top: 60px;">
-    <h2 style="font-size: 24px; margin-bottom: 20px; text-align: center;">Текущие курсы валют</h2>
+<div style="margin-top: 40px;">
+    <h2 style="font-size: 24px; margin-bottom: 10px; text-align: center;">Текущие курсы валют</h2>
+    
+    <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">
+        Последнее обновление: 
+        {% if top_currencies %}
+            {{ top_currencies.0.last_updated|date:"d.m.Y H:i" }}
+        {% else %}
+            Нет данных
+        {% endif %}
+    </p>
+    
     <div class="card-grid">
         {% for currency in top_currencies %}
             <div class="card" style="text-align: center;">
@@ -32,4 +42,10 @@
         {% endfor %}
     </div>
 </div>
+
+{% if user.is_staff %}
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="{% url 'update_rates' %}" class="btn-next" style="font-size: 14px; padding: 8px 16px;">Обновить курсы</a>
+    </div>
+{% endif %}
 {% endblock %}

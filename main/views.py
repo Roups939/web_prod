@@ -8,6 +8,8 @@ from decimal import Decimal
 from .models import Account, Transaction, Currency
 from .forms import TransactionForm
 from .forms import AccountForm
+from django.core.management import call_command
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 class RegisterView(generic.CreateView):
@@ -98,3 +100,12 @@ def add_account(request):
         form = AccountForm()
     
     return render(request, 'main/add_account.html', {'form': form})
+
+@staff_member_required
+def update_rates(request):
+    try:
+        call_command('fetch_rates')
+        messages.success(request, 'Курсы успешно обновлены!')
+    except Exception as e:
+        messages.error(request, f'Ошибка обновления: {e}')
+    return redirect('home')

@@ -11,6 +11,7 @@ class Currency(models.Model):
         default=0.0, 
         verbose_name="Текущий курс к рублю"
     )
+    last_updated = models.DateTimeField(auto_now=True, verbose_name="Последнее обновление") # <-- ЭТО ПОЛЕ
 
     def __str__(self):
         return f"{self.code} - {self.name}"
