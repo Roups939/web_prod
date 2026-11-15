@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Мой Портфель{% endblock %}
+
+{% block content %}
+<h1>Сводка по портфелю</h1>
+
+<!-- Верхние карточки с общей статистикой -->
+<div class="card-grid">
+    <div class="card">
+        <div class="card-title">Общий баланс (RUB)</div>
+        <div class="card-value">{{ total_balance_rub|floatformat:2 }} ₽</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-title">Общая прибыль / убыток</div>
+        <div class="card-value {% if total_profit_rub >= 0 %}text-green{% else %}text-red{% endif %}">
+            {% if total_profit_rub > 0 %}+{% endif %}{{ total_profit_rub|floatformat:2 }} ₽
+        </div>
+    </div>
+</div>
+
+<h1>Мои счета</h1>
+
+<div class="card-grid">
+    {% for account in accounts %}
+        <div class="card">
+            <div class="card-title">{{ account.name }} [{{ account.currency.code }}]</div>
+            <div class="card-value">{{ account.balance }} {{ account.currency.code }}</div>
+            
+            <div style="margin-top: 15px; font-size: 14px; border-top: 1px solid var(--border-green); padding-top: 10px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: var(--text-muted);">В рублях:</span>
+                    <span>{{ account.current_value_rub|floatformat:2 }} ₽</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Прибыль:</span>
+                    <span class="{% if account.profit_rub >= 0 %}text-green{% else %}text-red{% endif %}">
+                        {% if account.profit_rub > 0 %}+{% endif %}{{ account.profit_rub|floatformat:2 }} ₽
+                    </span>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-title">Пусто</div>
+            <div class="card-value" style="font-size: 16px; color: var(--text-muted);">
+                У вас пока нет счетов. Добавьте их через <a href="/admin/">админку</a>.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
