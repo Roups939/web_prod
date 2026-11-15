@@ -22,8 +22,13 @@ from main.views import RegisterView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.dashboard, name='dashboard'),
+    
+    path('', views.home, name='home'),#главная
+    
+    path('dashboard/', views.dashboard, name='dashboard'),#кабинет
+    
     path('add/', views.add_transaction, name='add_transaction'),
-    path('accounts/', include('django.contrib.auth.urls')), 
+    path('add-account/', views.add_account, name='add_account'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

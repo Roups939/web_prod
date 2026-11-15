@@ -1,0 +1,35 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Currency Tracker | Главная{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 50px 0;">
+    <h1 style="font-size: 48px; justify-content: center; margin-bottom: 20px;">
+        Управляй своими <span class="text-green">валютными</span> сбережениями
+    </h1>
+    <p style="font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 40px;">
+        Автоматический учет, актуальные курсы ЦБ и аналитика доходности вашего портфеля в одном месте.
+    </p>
+    
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <a href="{% url 'register' %}" class="btn-next" style="margin-top: 0; font-size: 18px; padding: 15px 30px;">Начать бесплатно</a>
+        <a href="{% url 'login' %}" class="btn-next" style="margin-top: 0; font-size: 18px; padding: 15px 30px; border-color: var(--text-muted); color: var(--text-main);">Войти</a>
+    </div>
+</div>
+
+<div style="margin-top: 60px;">
+    <h2 style="font-size: 24px; margin-bottom: 20px; text-align: center;">Текущие курсы валют</h2>
+    <div class="card-grid">
+        {% for currency in top_currencies %}
+            <div class="card" style="text-align: center;">
+                <div class="card-title">{{ currency.name }} ({{ currency.code }})</div>
+                <div class="card-value">{{ currency.current_rate|floatformat:2 }} ₽</div>
+            </div>
+        {% empty %}
+            <div class="card" style="grid-column: 1 / -1; text-align: center;">
+                <p>Данные о курсах временно недоступны. Запустите <code>python manage.py fetch_rates</code>.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

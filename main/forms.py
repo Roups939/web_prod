@@ -29,3 +29,16 @@ class TransactionForm(forms.ModelForm):
             cleaned_data['rate_at_moment'] = account.currency.current_rate
             
         return cleaned_data
+
+class AccountForm(forms.ModelForm):
+        class Meta:
+            model = Account
+            fields = ['name', 'currency']
+            widgets = {
+                'name': forms.TextInput(attrs={'placeholder': 'Например: Долларовый депозит'}),
+                'currency': forms.Select(),
+            }
+            labels = {
+                'name': 'Название счета',
+                'currency': 'Валюта',
+            }

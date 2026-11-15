@@ -7,6 +7,7 @@ from django.views import generic
 from decimal import Decimal
 from .models import Account, Transaction, Currency
 from .forms import TransactionForm
+from .forms import AccountForm
 
 
 class RegisterView(generic.CreateView):
@@ -74,3 +75,26 @@ def add_transaction(request):
         form = TransactionForm(user=request.user)
     
     return render(request, 'main/add_transaction.html', {'form': form})
+
+def home(request):
+    # Получаем топ-5 валют по курсу для демонстрации (публичная информация)
+    top_currencies = Currency.objects.order_by('-current_rate')[:5]
+    
+    return render(request, 'main/home.html', {
+        'top_currencies': top_currencies
+    })
+
+@login_required
+def add_account(request):
+    if request.method == 'POST':
+        form = AccountForm(request.POST)
+        if form.is_valid():
+            account = form.save(commit=False)
+            account.user = request.user # Привязываем счет к текущему пользователю
+            account.save()
+            messages.success(request, 'Счет успешно создан!')
+            return redirect('dashboard')
+    else:
+        form = AccountForm()
+    
+    return render(request, 'main/add_account.html', {'form': form})
