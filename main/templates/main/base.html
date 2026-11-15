@@ -132,6 +132,70 @@
             border-top: 1px solid var(--border-green);
             margin-top: auto;
         }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-color) !important; /* Темный фон */
+            border: 1px solid var(--border-green) !important;
+            border-radius: 4px;
+            color: #ffffff !important; /* Белый текст */
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-green) !important;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+        }
+
+        /* Стили для текста подсказок под полями */
+        .helptext, small {
+            color: var(--text-muted);
+            font-size: 13px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Стили для ошибок валидации */
+        .errorlist {
+            color: #ff4444;
+            list-style: none;
+            padding: 0;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        button.btn-next {
+        background-color: transparent;
+        color: var(--accent-green);
+        border: 2px solid var(--accent-green);
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%; /* Чтобы кнопка была на всю ширину формы */
+        display: block;
+    }
+
+    button.btn-next:hover {
+        background-color: var(--accent-green);
+        color: #000; /* Черный текст при наведении */
+        box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+    }
     </style>
 </head>
 <body>

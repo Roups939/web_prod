@@ -1,8 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
-from .models import Account, Transaction, Currency
+from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views import generic
 from decimal import Decimal
+from .models import Account, Transaction, Currency
+from .forms import TransactionForm
+
+
+class RegisterView(generic.CreateView):
+    form_class = UserCreationForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('login')
 
 @login_required
 def dashboard(request):
@@ -40,5 +50,27 @@ def dashboard(request):
         'total_balance_rub': total_balance_rub,
         'total_profit_rub': total_profit_rub,
     }
+
     
     return render(request, 'main/dashboard.html', context)
+
+@login_required
+def add_transaction(request):
+    if request.method == 'POST':
+        form = TransactionForm(request.POST, user=request.user)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            account = transaction.account
+            if transaction.transaction_type == 'BUY':
+                account.balance += transaction.amount
+            elif transaction.transaction_type == 'SELL':
+                account.balance -= transaction.amount
+            
+            transaction.save()
+            account.save()
+            messages.success(request, 'Транзакция успешно добавлена!')
+            return redirect('dashboard')
+    else:
+        form = TransactionForm(user=request.user)
+    
+    return render(request, 'main/add_transaction.html', {'form': form})

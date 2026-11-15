@@ -1,0 +1,24 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 50px auto;">
+    <h1 style="font-size: 22px; margin-bottom: 20px;">Вход</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 15px;">
+            <label style="color: var(--accent-green);">Имя пользователя</label>
+            <input type="text" name="username" class="form-control bg-dark text-white border-success" required style="width: 100%; padding: 10px; background: #000; border: 1px solid var(--accent-green); border-radius: 4px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label style="color: var(--accent-green);">Пароль</label>
+            <input type="password" name="password" class="form-control bg-dark text-white border-success" required style="width: 100%; padding: 10px; background: #000; border: 1px solid var(--accent-green); border-radius: 4px;">
+        </div>
+        <button type="submit" class="btn-next" style="width: 100%;">Войти</button>
+    </form>
+    <p style="margin-top: 15px; text-align: center; color: var(--text-muted);">
+        Нет аккаунта? <a href="{% url 'register' %}" style="color: var(--accent-green);">Зарегистрироваться</a>
+    </p>
+</div>
+{% endblock %}
