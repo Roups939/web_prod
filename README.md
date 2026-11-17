@@ -8,8 +8,8 @@
 ## Стек технологий
 *   **Backend:** Python 3.14, Django 5.2
 *   **База данных:** MySQL
-*   **Frontend:** HTML5, CSS3 (кастомная темная тема), JavaScript (Chart.js для графиков)
-*   **Аналитика:** Pandas, Matplotlib (для генерации данных)
+*   **Frontend:** HTML5, CSS3, JavaScript (Chart.js для графиков)
+*   **Аналитика:** Pandas, Matplotlib
 *   **Деплой:** Ubuntu 26, Nginx, Gunicorn
 
 ## Основные возможности
@@ -29,7 +29,7 @@
    `source .venv/bin/activate` (или `.venv\Scripts\activate` на Windows)
 3. Установите зависимости:
    `pip install -r requirements.txt`
-4. Создайте файл `.env` в корне проекта (пример в `env.example`).
+4. Создайте файл `.env` в корне проекта.
 5. Примените миграции:
    `python manage.py migrate`
 6. Загрузите курсы валют:
