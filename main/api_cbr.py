@@ -37,6 +37,6 @@ def get_rate_on_date(cbr_id, target_date):
             nominal = Decimal(record.find('Nominal').text)
             last_rate = value / nominal
             
-        return last_rate
+        return round(last_rate, 4) if last_rate else None #округление до 4 знаков после запятой для особо дорогих валют
     except Exception as e:
         return None
