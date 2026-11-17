@@ -28,6 +28,7 @@ class TransactionForm(forms.ModelForm):
             
         self.fields['rate_at_moment'].required = False
         self.fields['rate_at_moment'].help_text = "Оставьте пустым, чтобы взять курс ЦБ на выбранную дату"
+        self.fields['transaction_type'].empty_label = None
 
     def clean(self):
         cleaned_data = super().clean()
