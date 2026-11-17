@@ -37,4 +37,5 @@ urlpatterns = [
     path('transaction/<int:pk>/delete/', views.delete_transaction, name='delete_transaction'),
     path('account/<int:pk>/delete/', views.delete_account, name='delete_account'),
     path('transaction/<int:pk>/edit/', views.edit_transaction, name='edit_transaction'),
+    path('chart/<str:code>/', views.currency_chart, name='currency_chart'),
 ]

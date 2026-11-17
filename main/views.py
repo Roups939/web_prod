@@ -14,6 +14,9 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .api_cbr import get_rate_on_date
 from django.views.decorators.http import require_POST
+import pandas as pd
+from datetime import date, timedelta
+from .api_cbr import get_rate_on_date
 
 
 class RegisterView(generic.CreateView):
@@ -265,4 +268,27 @@ def edit_transaction(request, pk):
         'form': form, 
         'currencies': currencies,
         'is_edit': True
+    })
+
+@login_required
+def currency_chart(request, code):
+    currency = get_object_or_404(Currency, code=code)
+    
+    end_date = date.today()
+    start_date = end_date - timedelta(days=30)
+    date_list = pd.date_range(start=start_date, end=end_date).date
+    
+    data = []
+    for d in date_list:
+        rate = get_rate_on_date(currency.cbr_id, d)
+        if rate:
+            data.append({'date': d.strftime('%Y-%m-%d'), 'rate': float(rate)})
+    
+    df = pd.DataFrame(data)
+    
+    chart_data = df.to_dict(orient='records') if not df.empty else []
+    
+    return render(request, 'main/chart.html', {
+        'currency': currency,
+        'chart_data': chart_data
     })

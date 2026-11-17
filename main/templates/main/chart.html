@@ -1,0 +1,71 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Аналитика {{ currency.code }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 style="margin-bottom: 0;">Аналитика: {{ currency.name }}</h1>
+    <a href="{% url 'dashboard' %}" class="btn-next" style="font-size: 14px; padding: 8px 16px; text-decoration: none; margin-top: 0;">← Назад</a>
+</div>
+
+<div class="card" style="padding: 30px; margin-bottom: 30px;">
+    <h2 style="color: var(--accent-green); margin-bottom: 20px;">Динамика курса за 30 дней</h2>
+    <canvas id="currencyChart" style="max-height: 400px;"></canvas>
+</div>
+
+{{ chart_data|json_script:"chart-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rawData = JSON.parse(document.getElementById('chart-data').textContent);
+        
+        if (rawData.length === 0) {
+            document.getElementById('currencyChart').parentElement.innerHTML = '<p style="color: var(--text-muted);">Нет данных для построения графика.</p>';
+            return;
+        }
+
+        const labels = rawData.map(item => item.date);
+        const dataPoints = rawData.map(item => item.rate);
+
+        const ctx = document.getElementById('currencyChart').getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Курс (₽)',
+                    data: dataPoints,
+                    borderColor: '#00ff66',
+                    backgroundColor: 'rgba(0, 255, 102, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#00ff66',
+                    pointBorderColor: '#000',
+                    pointRadius: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#333' },
+                        ticks: { color: '#888' }
+                    },
+                    y: {
+                        grid: { color: '#333' },
+                        ticks: { color: '#888' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
