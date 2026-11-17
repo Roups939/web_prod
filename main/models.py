@@ -6,12 +6,10 @@ class Currency(models.Model):
     code = models.CharField(max_length=3, unique=True, verbose_name="Код валюты")
     name = models.CharField(max_length=50, verbose_name="Название")
     current_rate = models.DecimalField(
-        max_digits=10, 
-        decimal_places=4, 
-        default=0.0, 
-        verbose_name="Текущий курс к рублю"
+        max_digits=10, decimal_places=4, default=0.0, verbose_name="Текущий курс к рублю"
     )
-    last_updated = models.DateTimeField(auto_now=True, verbose_name="Последнее обновление") # <-- ЭТО ПОЛЕ
+    last_updated = models.DateTimeField(auto_now=True, verbose_name="Последнее обновление")
+    cbr_id = models.CharField(max_length=10, blank=True, null=True, verbose_name="ID в ЦБ")
 
     def __str__(self):
         return f"{self.code} - {self.name}"

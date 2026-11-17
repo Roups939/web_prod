@@ -1,7 +1,15 @@
 from django import forms
 from .models import Transaction, Account
+from datetime import date
+from main.api_cbr import get_rate_on_date
 
 class TransactionForm(forms.ModelForm):
+    date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control bg-dark text-white border-success'}),
+        initial=date.today,
+        label="Дата операции"
+    )
+
     class Meta:
         model = Transaction
         fields = ['account', 'transaction_type', 'amount', 'rate_at_moment']
@@ -17,28 +25,38 @@ class TransactionForm(forms.ModelForm):
         super(TransactionForm, self).__init__(*args, **kwargs)
         if user:
             self.fields['account'].queryset = Account.objects.filter(user=user)
-            self.fields['rate_at_moment'].required = False
-            self.fields['rate_at_moment'].help_text = "Оставьте пустым, чтобы использовать текущий курс ЦБ"
+            
+        self.fields['rate_at_moment'].required = False
+        self.fields['rate_at_moment'].help_text = "Оставьте пустым, чтобы взять курс ЦБ на выбранную дату"
 
     def clean(self):
         cleaned_data = super().clean()
         rate = cleaned_data.get('rate_at_moment')
         account = cleaned_data.get('account')
+        op_date = cleaned_data.get('date')
         
-        if not rate and account:
-            cleaned_data['rate_at_moment'] = account.currency.current_rate
+        if not rate and account and op_date:
+            cbr_id = account.currency.cbr_id
+            if not cbr_id:
+                raise forms.ValidationError("Для этой валюты нет данных в ЦБ. Введите курс вручную.")
             
+            fetched_rate = get_rate_on_date(cbr_id, op_date)
+            if fetched_rate:
+                cleaned_data['rate_at_moment'] = fetched_rate
+            else:
+                raise forms.ValidationError("Не удалось получить курс ЦБ. Введите вручную.")
+                
         return cleaned_data
 
 class AccountForm(forms.ModelForm):
-        class Meta:
-            model = Account
-            fields = ['name', 'currency']
-            widgets = {
-                'name': forms.TextInput(attrs={'placeholder': 'Например: Долларовый депозит'}),
-                'currency': forms.Select(),
-            }
-            labels = {
-                'name': 'Название счета',
-                'currency': 'Валюта',
-            }
+    class Meta:
+        model = Account
+        fields = ['name', 'currency']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Например: Долларовый депозит'}),
+            'currency': forms.Select(),
+        }
+        labels = {
+            'name': 'Название счета',
+            'currency': 'Валюта',
+        }
