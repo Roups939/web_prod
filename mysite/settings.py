@@ -32,7 +32,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 SECRET_KEY = 'django-insecure-&45y=5eeqyid#-!_8!!d6z5)+mqzp7b_s%pt9b@!$55x&waux$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -143,3 +143,5 @@ LOGIN_URL = 'login'
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
