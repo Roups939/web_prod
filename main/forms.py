@@ -34,12 +34,21 @@ class TransactionForm(forms.ModelForm):
         rate = cleaned_data.get('rate_at_moment')
         account = cleaned_data.get('account')
         op_date = cleaned_data.get('date')
-        
+        transaction_type = cleaned_data.get('transaction_type')
+        amount = cleaned_data.get('amount')
+
+        if transaction_type == 'SELL' and account and amount:
+            if amount > account.balance:
+                raise forms.ValidationError(
+                    f"Недостаточно средств. На счете только {account.balance} {account.currency.code}."
+                )
+            
         if not rate and account and op_date:
             cbr_id = account.currency.cbr_id
             if not cbr_id:
                 raise forms.ValidationError("Для этой валюты нет данных в ЦБ. Введите курс вручную.")
             
+            from main.api_cbr import get_rate_on_date
             fetched_rate = get_rate_on_date(cbr_id, op_date)
             if fetched_rate:
                 cleaned_data['rate_at_moment'] = fetched_rate
