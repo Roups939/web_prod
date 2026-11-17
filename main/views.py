@@ -13,6 +13,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .api_cbr import get_rate_on_date
+from django.views.decorators.http import require_POST
 
 
 class RegisterView(generic.CreateView):
@@ -160,8 +161,14 @@ def add_transaction(request):
         if form.is_valid():
             transaction = form.save(commit=False)
             transaction.date = form.cleaned_data['date'] 
-            
+            if not form.cleaned_data.get('rate_at_moment'):
+                 pass
+            transaction.rate_date = transaction.date
             account = transaction.account
+            if request.POST.get('rate_at_moment'):
+                transaction.is_manual_rate = True
+            else:
+                transaction.is_manual_rate = False
             if transaction.transaction_type == 'BUY':
                 account.balance += transaction.amount
             elif transaction.transaction_type == 'SELL':
@@ -186,4 +193,76 @@ def add_transaction(request):
     return render(request, 'main/add_transaction.html', {
         'form': form, 
         'currencies': currencies
+    })
+
+@login_required
+@require_POST
+def delete_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk, account__user=request.user)
+    account = transaction.account
+    
+    if transaction.transaction_type == 'BUY':
+        account.balance -= transaction.amount
+    elif transaction.transaction_type == 'SELL':
+        account.balance += transaction.amount
+    
+    account.save()
+    
+    transaction.delete()
+    messages.success(request, 'Транзакция удалена, баланс счета обновлен.')
+    
+    return redirect('account_detail', pk=account.pk)
+
+@login_required
+@require_POST
+def delete_account(request, pk):
+    account = get_object_or_404(Account, pk=pk, user=request.user)
+    account_name = account.name
+    
+    account.delete()
+    messages.success(request, f'Счет "{account_name}" и все его операции были удалены.')
+    
+    return redirect('dashboard')
+
+@login_required
+def edit_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk, account__user=request.user)
+    account = transaction.account
+    
+    if request.method == 'POST':
+        form = TransactionForm(request.POST, instance=transaction, user=request.user)
+        if form.is_valid():
+            old_amount = transaction.amount
+            old_type = transaction.transaction_type
+            if old_type == 'BUY':
+                account.balance -= old_amount
+            elif old_type == 'SELL':
+                account.balance += old_amount
+            
+            updated_transaction = form.save(commit=False)
+            updated_transaction.date = form.cleaned_data['date']
+            
+            if updated_transaction.transaction_type == 'BUY':
+                account.balance += updated_transaction.amount
+            elif updated_transaction.transaction_type == 'SELL':
+                account.balance -= updated_transaction.amount
+            
+            updated_transaction.save()
+            account.save()
+            
+            messages.success(request, 'Транзакция успешно обновлена!')
+            return redirect('account_detail', pk=account.pk)
+    else:
+        form = TransactionForm(
+            instance=transaction, 
+            user=request.user, 
+            initial={'date': transaction.date}
+        )
+    
+    currencies = {c.code: {'cbr_id': c.cbr_id, 'name': c.name} for c in Currency.objects.all()}
+    
+    return render(request, 'main/add_transaction.html', {
+        'form': form, 
+        'currencies': currencies,
+        'is_edit': True
     })

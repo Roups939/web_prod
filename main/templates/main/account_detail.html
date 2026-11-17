@@ -5,9 +5,16 @@
 {% block content %}
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h1 style="margin-bottom: 0;">Счет: {{ account.name }}</h1>
-    <a href="{% url 'dashboard' %}" class="btn-next" style="font-size: 14px; padding: 8px 16px; text-decoration: none; margin-top: 0;">← Назад к портфелю</a>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'dashboard' %}" class="btn-next" style="font-size: 14px; padding: 8px 16px; text-decoration: none; margin-top: 0;">← Назад к портфелю</a>
+        <form method="post" action="{% url 'delete_account' account.pk %}" style="display: inline;" onsubmit="return confirm('ВНИМАНИЕ! Вы уверены, что хотите удалить этот счет? Все связанные с ним транзакции будут безвозвратно удалены.');">
+            {% csrf_token %}
+            <button type="submit" class="btn-next" style="font-size: 14px; padding: 8px 16px; margin-top: 0; border-color: #ff4444; color: #ff4444 !important; background: transparent; cursor: pointer;">
+                 Удалить счет
+            </button>
+        </form>
+    </div>
 </div>
-
 
 <div class="card-grid" style="margin-bottom: 30px;">
     <div class="card">
@@ -26,8 +33,6 @@
     </div>
 </div>
 
-<h1>История операций</h1>
-
 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 20px;">
     <h1 style="margin-bottom: 0;">История операций</h1>
     <a href="{% url 'add_transaction' %}?account={{ account.pk }}" class="btn-next" style="font-size: 14px; padding: 8px 16px; text-decoration: none; margin-top: 0;">
@@ -35,21 +40,34 @@
     </a>
 </div>
 
-<div class="card" style="padding: 0; overflow-x: auto; margin-top: 20px;">
+<div class="card" style="padding: 0; overflow-x: auto;">
     <table style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
             <tr style="border-bottom: 1px solid var(--border-green); background-color: #111;">
                 <th style="padding: 15px; color: var(--accent-green);">Дата</th>
                 <th style="padding: 15px; color: var(--accent-green);">Тип</th>
                 <th style="padding: 15px; color: var(--accent-green);">Количество</th>
-                <th style="padding: 15px; color: var(--accent-green);">Курс</th>
+                <td style="padding: 15px;">
+                    <div>{{ t.rate_at_moment }} ₽</div>
+                    {% if t.is_manual_rate %}
+                        <div style="font-size: 11px; color: var(--accent-green);">ручной курс</div>
+                    {% else %}
+                        <div style="font-size: 11px; color: #666;">курс ЦБ</div>
+                    {% endif %}
+                </td>
                 <th style="padding: 15px; color: var(--accent-green);">Сумма (RUB)</th>
+                <th style="padding: 15px; color: var(--accent-green);">Действия</th>
             </tr>
         </thead>
         <tbody>
             {% for t in transactions %}
             <tr style="border-bottom: 1px solid #222;">
-                <td style="padding: 15px; color: var(--text-muted);">{{ t.date|date:"d.m.Y" }}</td>
+                <td style="padding: 15px; color: var(--text-muted);">
+                    <div>{{ t.date|date:"d.m.Y" }}</div>
+                    {% if t.rate_date %}
+                        <div style="font-size: 11px; color: #666;">курс на {{ t.rate_date|date:"d.m.Y" }}</div>
+                    {% endif %}
+                </td>
                 <td style="padding: 15px;">
                     {% if t.transaction_type == 'BUY' %}
                         <span style="color: var(--accent-green);">Покупка</span>
@@ -58,15 +76,29 @@
                     {% endif %}
                 </td>
                 <td style="padding: 15px;">{{ t.amount }} {{ account.currency.code }}</td>
-                <td style="padding: 15px;">{{ t.rate_at_moment }} ₽</td>
+                <td style="padding: 15px;">
+                    <div>{{ t.rate_at_moment }} ₽</div>
+                    {% if t.is_manual_rate %}
+                        <div style="font-size: 11px; color: var(--accent-green);">ручной курс</div>
+                    {% else %}
+                        <div style="font-size: 11px; color: #666;">курс ЦБ</div>
+                    {% endif %}
+                </td>
                 <td style="padding: 15px; font-weight: bold;">
                     {% if t.transaction_type == 'BUY' %}+{% else %}-{% endif %}
                     {{ t.amount|floatformat:2 }}
                 </td>
+                <td style="padding: 15px; text-align: center; white-space: nowrap;">
+                    <a href="{% url 'edit_transaction' t.pk %}" style="color: var(--accent-green); text-decoration: none; font-size: 16px; margin-right: 15px;" title="Редактировать">✎</a>
+                    <form method="post" action="{% url 'delete_transaction' t.pk %}" style="display: inline;" onsubmit="return confirm('Удалить транзакцию? Баланс будет пересчитан.');">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: #ff4444; cursor: pointer; font-size: 16px;" title="Удалить">✖</button>
+                    </form>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" style="padding: 20px; text-align: center; color: var(--text-muted);">
+                <td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">
                     По этому счету еще нет операций.
                 </td>
             </tr>

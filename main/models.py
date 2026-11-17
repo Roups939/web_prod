@@ -70,12 +70,18 @@ class Transaction(models.Model):
         validators=[MinValueValidator(0.01)], 
         verbose_name="Количество валюты"
     )
+    
     rate_at_moment = models.DecimalField(
         max_digits=10, 
         decimal_places=4, 
         verbose_name="Курс на момент операции"
     )
-    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата операции")
+    
+    is_manual_rate = models.BooleanField(default=False, verbose_name="Ручной курс")
+    
+    date = models.DateField(verbose_name="Дата операции")
+    
+    rate_date = models.DateField(null=True, blank=True, verbose_name="Дата курса")
 
     def __str__(self):
         return f"{self.get_transaction_type_display()} {self.amount} {self.account.currency.code}"

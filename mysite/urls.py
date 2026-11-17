@@ -34,4 +34,7 @@ urlpatterns = [
     path('update-rates/', views.update_rates, name='update_rates'),
     path('account/<int:pk>/', views.account_detail, name='account_detail'),
     path('api/get-rate/', views.get_cbr_rate, name='get_cbr_rate'),
+    path('transaction/<int:pk>/delete/', views.delete_transaction, name='delete_transaction'),
+    path('account/<int:pk>/delete/', views.delete_account, name='delete_account'),
+    path('transaction/<int:pk>/edit/', views.edit_transaction, name='edit_transaction'),
 ]

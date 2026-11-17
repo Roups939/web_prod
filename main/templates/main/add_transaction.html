@@ -4,7 +4,9 @@
 
 {% block content %}
 <div style="max-width: 600px; margin: 0 auto;">
-    <h1 style="margin-bottom: 20px;">Новая транзакция</h1>
+    <h1 style="margin-bottom: 20px;">
+        {% if is_edit %}Редактировать транзакцию{% else %}Новая транзакция{% endif %}
+    </h1>
 
     <div class="card" style="padding: 30px;">
         <form method="post" id="transaction-form">
