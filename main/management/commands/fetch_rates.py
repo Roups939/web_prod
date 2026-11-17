@@ -9,17 +9,14 @@ class Command(BaseCommand):
     help = 'Fetches actual rates and CBR IDs'
 
     def handle(self, *args, **options):
-        self.stdout.write('Fetching CBR IDs...')
         cbr_ids = fetch_cbr_ids()
 
-        self.stdout.write('Fetching current rates...')
         url = 'https://www.cbr.ru/scripts/XML_daily.asp'
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             root = ET.fromstring(response.content.decode('windows-1251'))
         except Exception as e:
-            self.stderr.write(self.style.ERROR(f'Network error: {e}'))
             return
 
         updated_count = 0

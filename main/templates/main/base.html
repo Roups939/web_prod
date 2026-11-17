@@ -140,10 +140,10 @@
         textarea {
             width: 100%;
             padding: 10px;
-            background-color: var(--bg-color) !important; /* Темный фон */
+            background-color: var(--bg-color) !important;
             border: 1px solid var(--border-green) !important;
             border-radius: 4px;
-            color: #ffffff !important; /* Белый текст */
+            color: #ffffff !important;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             font-size: 15px;
             transition: all 0.2s ease;
@@ -273,9 +273,8 @@
                 {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}">Мой портфель</a>
                     
-                    <!-- Показываем Админку только персоналу (is_staff) -->
                     {% if user.is_staff %}
-                        <a href="/admin/">Админка</a>
+                        <a href="/admin/">Админ</a>
                     {% endif %}
                     
                     <span style="color: var(--accent-green);">[{{ user.username }}]</span>

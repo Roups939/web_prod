@@ -19,7 +19,6 @@ def fetch_cbr_ids():
                 ids[code] = cbr_id
         return ids
     except Exception as e:
-        print(f"Error fetching CBR IDs: {e}")
         return {}
 
 def get_rate_on_date(cbr_id, target_date):
@@ -27,7 +26,6 @@ def get_rate_on_date(cbr_id, target_date):
     date_from = (target_date - timedelta(days=7)).strftime('%d/%m/%Y')
     
     url = f"https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1={date_from}&date_req2={date_to}&VAL_NM_RQ={cbr_id}"
-    print(f"DEBUG: Requesting URL: {url}")
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -41,5 +39,4 @@ def get_rate_on_date(cbr_id, target_date):
             
         return last_rate
     except Exception as e:
-        print(f"Error fetching rate for date {target_date}: {e}")
         return None
