@@ -17,6 +17,7 @@ from django.views.decorators.http import require_POST
 import pandas as pd
 from datetime import date, timedelta
 from .api_cbr import get_rate_on_date
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class RegisterView(generic.CreateView):
@@ -163,7 +164,9 @@ def add_transaction(request):
         form = TransactionForm(request.POST, user=request.user)
         if form.is_valid():
             transaction = form.save(commit=False)
-            transaction.date = form.cleaned_data['date'] 
+            transaction.date = form.cleaned_data['date']
+            if transaction.rate_at_moment:
+                transaction.rate_at_moment = transaction.rate_at_moment.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP) 
             if not form.cleaned_data.get('rate_at_moment'):
                  pass
             transaction.rate_date = transaction.date
