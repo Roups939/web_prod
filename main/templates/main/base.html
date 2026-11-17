@@ -86,7 +86,6 @@
             border-radius: 2px;
         }
 
-        /* --- Стили для карточек (адаптация под наш проект) --- */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -158,7 +157,6 @@
             box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
         }
 
-        /* Стили для текста подсказок под полями */
         .helptext, small {
             color: var(--text-muted);
             font-size: 13px;
@@ -166,7 +164,6 @@
             margin-top: 5px;
         }
 
-        /* Стили для ошибок валидации */
         .errorlist {
             color: #ff4444;
             list-style: none;
@@ -187,13 +184,13 @@
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 100%; /* Чтобы кнопка была на всю ширину формы */
+            width: 100%;
             display: block;
         }
 
         button.btn-next:hover {
             background-color: var(--accent-green);
-            color: #000; /* Черный текст при наведении */
+            color: #000;
             box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
         }
         a.btn-next {
@@ -215,6 +212,56 @@
             background-color: var(--accent-green);
             color: #000 !important;
             box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        }
+        input[type="date"] {
+            background-color: var(--bg-color) !important;
+            color: #ffffff !important;
+            border: 1px solid var(--border-green) !important;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .select2-dropdown {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--border-green) !important;
+            color: #fff !important;
+        }
+
+        .select2-container--default .select2-results__option {
+            background-color: var(--card-bg) !important;
+            color: #fff !important;
+        }
+
+        .select2-container--default .select2-results__option--selected {
+            background-color: #003311 !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+            background-color: var(--accent-green) !important;
+            color: #000 !important;
+        }
+
+        .select2-search__field {
+            background-color: var(--bg-color) !important;
+            color: #fff !important;
+            border: 1px solid var(--border-green) !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            background-color: var(--bg-color) !important;
+            border: 1px solid var(--border-green) !important;
+            height: 42px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #fff !important;
+            line-height: 30px;
         }
     </style>
 </head>

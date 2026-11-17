@@ -32,4 +32,6 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('update-rates/', views.update_rates, name='update_rates'),
+    path('account/<int:pk>/', views.account_detail, name='account_detail'),
+    path('api/get-rate/', views.get_cbr_rate, name='get_cbr_rate'),
 ]

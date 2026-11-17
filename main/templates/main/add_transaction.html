@@ -1,0 +1,131 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Новая транзакция{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1 style="margin-bottom: 20px;">Новая транзакция</h1>
+
+    <div class="card" style="padding: 30px;">
+        <form method="post" id="transaction-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: var(--accent-green); margin-bottom: 5px; font-weight: 600;">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="helptext">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="errorlist">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div style="background: #111; border: 1px solid var(--border-green); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="color: var(--text-muted);">Валюта операции:</span>
+                    <span id="selected-currency-display" style="color: #fff; font-weight: bold;">—</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                    <span style="color: var(--text-muted);">Курс ЦБ на выбранную дату:</span>
+                    <span id="cbr-rate-display" style="color: var(--accent-green); font-weight: bold;">— ₽</span>
+                </div>
+
+                <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 5px;">Итого к оплате:</div>
+                <div style="font-size: 20px; font-weight: bold; color: #fff;">
+                    <span id="calc-result">0.00</span> ₽
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <button type="submit" class="btn-next" style="flex: 1;">Сохранить</button>
+                <a href="{% url 'dashboard' %}" style="flex: 1; text-align: center; padding: 12px; color: var(--text-muted); border: 1px solid var(--text-muted); border-radius: 4px; text-decoration: none; display: flex; align-items: center; justify-content: center;">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{ currencies|json_script:"currencies-data" }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const amountInput = document.getElementById('id_amount');
+        const rateInput = document.getElementById('id_rate_at_moment');
+        const resultSpan = document.getElementById('calc-result');
+        
+        const accountSelect = document.getElementById('id_account');
+        const dateInput = document.querySelector('input[type="date"]');
+        const cbrRateDisplay = document.getElementById('cbr-rate-display');
+        const currencyDisplay = document.getElementById('selected-currency-display');
+
+        const currenciesData = JSON.parse(document.getElementById('currencies-data').textContent);
+
+        function calculateTotal() {
+            const amount = parseFloat(amountInput.value) || 0;
+            const manualRate = parseFloat(rateInput.value) || 0;
+            let finalRate = manualRate;
+
+            if (finalRate === 0 && cbrRateDisplay.dataset.rate) {
+                finalRate = parseFloat(cbrRateDisplay.dataset.rate) || 0;
+            }
+
+            resultSpan.textContent = (amount * finalRate).toFixed(2);
+        }
+
+        function updateCurrencyDisplay() {
+            const selectedOption = accountSelect.options[accountSelect.selectedIndex];
+            const match = selectedOption.text.match(/\(([^)]+)\)/);
+            const currencyCode = match ? match[1] : '—';
+            if (currencyDisplay) {
+                currencyDisplay.textContent = currencyCode;
+            }
+            return currencyCode;
+        }
+
+        function fetchCbrRate() {
+            const currencyCode = updateCurrencyDisplay();
+            const cbrId = currenciesData[currencyCode]?.cbr_id;
+            const dateVal = dateInput.value;
+
+            if (cbrId && dateVal) {
+                cbrRateDisplay.textContent = 'Загрузка...';
+                
+                fetch(`/api/get-rate/?date=${dateVal}&cbr_id=${cbrId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.rate) {
+                            cbrRateDisplay.textContent = parseFloat(data.rate).toFixed(4) + ' ₽';
+                            cbrRateDisplay.dataset.rate = data.rate;
+                        } else {
+                            cbrRateDisplay.textContent = 'Нет данных';
+                            delete cbrRateDisplay.dataset.rate;
+                        }
+                        calculateTotal();
+                    })
+                    .catch(err => {
+                        cbrRateDisplay.textContent = 'Ошибка API';
+                        delete cbrRateDisplay.dataset.rate;
+                        calculateTotal();
+                    });
+            }
+            
+        }
+
+        amountInput.addEventListener('input', calculateTotal);
+        rateInput.addEventListener('input', calculateTotal);
+        accountSelect.addEventListener('change', fetchCbrRate);
+        dateInput.addEventListener('change', fetchCbrRate);
+
+        fetchCbrRate();
+    });
+
+</script>
+{% endblock %}

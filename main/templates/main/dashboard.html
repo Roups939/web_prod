@@ -5,7 +5,6 @@
 {% block content %}
 <h1>Сводка по портфелю</h1>
 
-<!-- Верхние карточки с общей статистикой -->
 <div class="card-grid">
     <div class="card">
         <div class="card-title">Общий баланс (RUB)</div>
@@ -20,12 +19,26 @@
     </div>
 </div>
 
-<h1>Мои счета</h1>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 20px;">
+    <h1 style="margin-bottom: 0;">Мои счета</h1>
+    <div style="display: flex; gap: 15px;">
+        <a href="{% url 'add_account' %}" class="btn-next" style="font-size: 14px; padding: 10px 20px; margin-top: 0; text-decoration: none;">
+            + Создать счет
+        </a>
+        <a href="{% url 'add_transaction' %}" class="btn-next" style="font-size: 14px; padding: 10px 20px; margin-top: 0; text-decoration: none;">
+            + Добавить транзакцию
+        </a>
+    </div>
+</div>
 
+<!-- Сетка счетов -->
 <div class="card-grid">
     {% for account in accounts %}
         <div class="card">
-            <div class="card-title">{{ account.name }} [{{ account.currency.code }}]</div>
+            <div class="card-title" style="display: flex; justify-content: space-between;">
+                <span>{{ account.name }} [{{ account.currency.code }}]</span>
+                <a href="{% url 'account_detail' account.pk %}" style="color: var(--accent-green); text-decoration: none; font-size: 12px;">Детали →</a>
+            </div>
             <div class="card-value">{{ account.balance }} {{ account.currency.code }}</div>
             
             <div style="margin-top: 15px; font-size: 14px; border-top: 1px solid var(--border-green); padding-top: 10px;">
@@ -42,11 +55,12 @@
             </div>
         </div>
     {% empty %}
-        <div class="card" style="grid-column: 1 / -1;">
-            <div class="card-title">Пусто</div>
-            <div class="card-value" style="font-size: 16px; color: var(--text-muted);">
-                У вас пока нет счетов. Добавьте их через <a href="/admin/">админку</a>.
+        <div class="card" style="grid-column: 1 / -1; text-align: center;">
+            <div class="card-title">У вас пока нет счетов</div>
+            <div class="card-value" style="font-size: 16px; color: var(--text-muted); margin-bottom: 20px;">
+                Создайте первый счет, чтобы начать отслеживать свои сбережения.
             </div>
+            <a href="{% url 'add_account' %}" class="btn-next" style="display: inline-block; margin-top: 0; text-decoration: none;">Создать счет</a>
         </div>
     {% endfor %}
 </div>

@@ -27,7 +27,7 @@ def get_rate_on_date(cbr_id, target_date):
     date_from = (target_date - timedelta(days=7)).strftime('%d/%m/%Y')
     
     url = f"https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1={date_from}&date_req2={date_to}&VAL_NM_RQ={cbr_id}"
-    
+    print(f"DEBUG: Requesting URL: {url}")
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
