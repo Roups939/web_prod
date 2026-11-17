@@ -23,13 +23,12 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS=138.124.184.36
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&45y=5eeqyid#-!_8!!d6z5)+mqzp7b_s%pt9b@!$55x&waux$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
