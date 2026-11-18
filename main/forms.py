@@ -3,7 +3,7 @@ from .models import Transaction, Account
 from datetime import date
 from main.api_cbr import get_rate_on_date
 
-class TransactionForm(forms.ModelForm):
+class TransactionForm(forms.ModelForm):#форма для создания\редактирования транзакций
     date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control bg-dark text-white border-success'}),
         initial=date.today,
@@ -28,7 +28,7 @@ class TransactionForm(forms.ModelForm):
             
         self.fields['rate_at_moment'].required = False
         self.fields['rate_at_moment'].help_text = "Оставьте пустым, чтобы взять курс ЦБ на выбранную дату"
-        self.fields['transaction_type'].choices = self.fields['transaction_type'].choices[1:]
+        self.fields['transaction_type'].choices = self.fields['transaction_type'].choices[1:]#убрать пустой вариант в списке
 
     def clean(self):
         cleaned_data = super().clean()
@@ -38,18 +38,17 @@ class TransactionForm(forms.ModelForm):
         transaction_type = cleaned_data.get('transaction_type')
         amount = cleaned_data.get('amount')
 
-        if transaction_type == 'SELL' and account and amount:
+        if transaction_type == 'SELL' and account and amount:#проверка баланса при продаже
             if amount > account.balance:
                 raise forms.ValidationError(
                     f"Недостаточно средств. На счете только {account.balance} {account.currency.code}."
                 )
             
-        if not rate and account and op_date:
+        if not rate and account and op_date:#автоподстановка курса ЦБ, если поле с курсом пустое
             cbr_id = account.currency.cbr_id
             if not cbr_id:
                 raise forms.ValidationError("Для этой валюты нет данных в ЦБ. Введите курс вручную.")
             
-            from main.api_cbr import get_rate_on_date
             fetched_rate = get_rate_on_date(cbr_id, op_date)
             if fetched_rate:
                 cleaned_data['rate_at_moment'] = fetched_rate
@@ -58,7 +57,7 @@ class TransactionForm(forms.ModelForm):
                 
         return cleaned_data
 
-class AccountForm(forms.ModelForm):
+class AccountForm(forms.ModelForm):#форма для создания счёта
     class Meta:
         model = Account
         fields = ['name', 'currency']

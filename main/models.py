@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 
-class Currency(models.Model):
+class Currency(models.Model):#валюты и курсы
     code = models.CharField(max_length=3, unique=True, verbose_name="Код валюты")
     name = models.CharField(max_length=50, verbose_name="Название")
     current_rate = models.DecimalField(
@@ -19,7 +19,7 @@ class Currency(models.Model):
         verbose_name_plural = "Валюты"
 
 
-class Account(models.Model):
+class Account(models.Model):#портфель, привязанн к user и currency
     user = models.ForeignKey(
         User, 
         on_delete=models.CASCADE, 
@@ -47,7 +47,7 @@ class Account(models.Model):
         verbose_name_plural = "Счета"
 
 
-class Transaction(models.Model):
+class Transaction(models.Model):#история операций
     TRANSACTION_TYPES = (
         ('BUY', 'Покупка'),
         ('SELL', 'Продажа'),
